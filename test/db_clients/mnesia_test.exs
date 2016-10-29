@@ -1,8 +1,8 @@
-defmodule Exce.DbClient.MnesiaTest do
-  import Exce.DbClient.Mnesia
+defmodule Execs.DbClient.MnesiaTest do
+  import Execs.DbClient.Mnesia
   require Logger
   use ExUnit.Case, async: true
-  
+
   setup_all [:setup_mnesia]
 
   describe "delete tests:" do
@@ -14,7 +14,7 @@ defmodule Exce.DbClient.MnesiaTest do
 
     test "delete nonempty entity", %{id: id} = _context do
       assert transaction(fn -> write([id], [:foo], [:bar], :foobar) end) == :ok
-      
+
       assert transaction(fn ->
         delete([id])
       end) == [{id, %{foo: %{bar: :foobar}}}]
@@ -24,7 +24,7 @@ defmodule Exce.DbClient.MnesiaTest do
       transaction(fn ->
         write([id], [:foo, :bar], [:foo, :bar], :foobar)
       end)
-      
+
       assert transaction(fn ->
         delete([id], [:bar])
       end) == [{id, %{bar: %{foo: :foobar, bar: :foobar}}}]
@@ -38,7 +38,7 @@ defmodule Exce.DbClient.MnesiaTest do
       transaction(fn ->
         write([id], [:foo, :bar], [:foo, :bar], :foobar)
       end)
-      
+
       assert transaction(fn ->
         delete([id], [:bar], [:foo])
       end) == [{id, %{bar: %{foo: :foobar}}}]
@@ -60,38 +60,38 @@ defmodule Exce.DbClient.MnesiaTest do
         write([id], [:foobar], [:foo], :foobar)
       end)
 
-      assert transaction(fn -> 
+      assert transaction(fn ->
         has_all([id], [:bar])
       end) == [{id, true}]
 
-      assert transaction(fn -> 
+      assert transaction(fn ->
         has_all([id], [:bar, :foo])
       end) == [{id, true}]
 
-      assert transaction(fn -> 
+      assert transaction(fn ->
         has_all([id, id2], [:bar, :foo])
       end) == [{id, true}, {id2, true}]
 
-      assert transaction(fn -> 
+      assert transaction(fn ->
         has_all([id, id2], [:bar, :foo, :foobar])
       end) == [{id, true}, {id2, false}]
 
-      assert transaction(fn -> 
+      assert transaction(fn ->
         has_all([id, id2], [:bar, :foo, :foobar], [:foo, :bar, :foobar])
       end) == [{id, false}, {id2, false}]
 
-      assert transaction(fn -> 
+      assert transaction(fn ->
         has_all([id, id2], [:bar, :foo], [:foo, :bar])
       end) == [{id, true}, {id2, true}]
 
-      assert transaction(fn -> 
+      assert transaction(fn ->
         has_all([id, id2],
                 [:bar, :foo],
                 [:foo, :bar],
                 [&(&1 === :foobar), fn(_) -> true end])
       end) == [{id, true}, {id2, true}]
 
-      assert transaction(fn -> 
+      assert transaction(fn ->
         has_all([id, id2],
                 [:bar, :foo],
                 [:foo, :bar],
@@ -107,31 +107,31 @@ defmodule Exce.DbClient.MnesiaTest do
         write([id2], [:foo, :bar], [:bar], :foobar)
       end)
 
-      assert transaction(fn -> 
+      assert transaction(fn ->
         has_any([id], [:bar])
       end) == [{id, true}]
 
-      assert transaction(fn -> 
+      assert transaction(fn ->
         has_any([id], [:bar, :baz])
       end) == [{id, true}]
 
-      assert transaction(fn -> 
+      assert transaction(fn ->
         has_any([id], [:baz])
       end) == [{id, false}]
 
-      assert transaction(fn -> 
+      assert transaction(fn ->
         has_any([id, id2], [:bar, :baz])
       end) == [{id, true}, {id2, true}]
 
-      assert transaction(fn -> 
+      assert transaction(fn ->
         has_any([id, id2], [:foobar])
       end) == [{id, true}, {id2, false}]
 
-      assert transaction(fn -> 
+      assert transaction(fn ->
         has_any([id, id2], [:foobar], [:bar])
       end) == [{id, true}, {id2, false}]
 
-      assert transaction(fn -> 
+      assert transaction(fn ->
         has_any([id, id2],
                 [:foobar],
                 [:bar],
@@ -147,34 +147,34 @@ defmodule Exce.DbClient.MnesiaTest do
         write([id2], [:foo, :bar], [:bar], :foobar)
       end)
 
-      assert transaction(fn -> 
+      assert transaction(fn ->
         has_which([id], [:bar])
       end) == [{id, %{bar: true}}]
 
-      assert transaction(fn -> 
+      assert transaction(fn ->
         has_which([id], [:oof])
       end) == [{id, %{oof: false}}]
 
-      assert transaction(fn -> 
+      assert transaction(fn ->
         has_which([id], [:bar, :oof])
       end) == [{id, %{oof: false, bar: true}}]
 
-      assert transaction(fn -> 
+      assert transaction(fn ->
         has_which([id, id2], [:bar, :oof])
       end) == [{id, %{oof: false, bar: true}}, {id2, %{oof: false, bar: true}}]
 
-      assert transaction(fn -> 
+      assert transaction(fn ->
         has_which([id, id2], [:bar, :oof], [:bar, :foo])
       end) == [
         {id,
           %{bar: %{bar: true, foo: false},
             oof: %{bar: false, foo: false}}},
-        {id2, 
+        {id2,
           %{bar: %{bar: true, foo: false},
             oof: %{bar: false, foo: false}}}
       ]
 
-      assert transaction(fn -> 
+      assert transaction(fn ->
         has_which([id, id2],
                   [:foo, :bar],
                   [:bar, :foo],
@@ -183,7 +183,7 @@ defmodule Exce.DbClient.MnesiaTest do
         {id,
           %{bar: %{bar: true, foo: false},
             foo: %{bar: true, foo: false}}},
-        {id2, 
+        {id2,
           %{bar: %{bar: true, foo: false},
             foo: %{bar: true, foo: false}}}
       ]
@@ -195,15 +195,15 @@ defmodule Exce.DbClient.MnesiaTest do
 
     test "list", %{id: id} = _context do
       id2 = new_entity()
-      
+
       transaction(fn ->
         write([id, id2], [:foo, :bar], [:bar, :foo], :foobar)
       end)
-      
+
       assert transaction(fn ->
         list([id, id2])
       end) == [{id, [:bar, :foo]}, {id2, [:bar, :foo]}]
-      
+
       assert transaction(fn ->
         list([id, id2], [:foo, :bar])
       end) == [
@@ -222,33 +222,33 @@ defmodule Exce.DbClient.MnesiaTest do
 
     test "find_with_all", %{id: id} = _context do
       id2 = new_entity()
-      
+
       transaction(fn ->
         write([id, id2], [:oof, :rab], [:oof, :rab], :raboof)
       end)
-      
+
       assert transaction(fn ->
         find_with_all([:oof, :rab])
       end) == [id, id2]
-      
+
       assert transaction(fn ->
         find_with_all([:oof, :rabbar])
       end) == []
-      
+
       assert transaction(fn ->
         find_with_all([:oof, :rab], [:oof, :rab])
       end) == [id, id2]
-      
+
       assert transaction(fn ->
         find_with_all([:oof, :rab], [:oof, :rabbar])
       end) == []
-      
+
       assert transaction(fn ->
         find_with_all([:oof, :rab],
                       [:oof, :rab],
                       [&(&1 === :raboof), fn(_) -> true end])
       end) == [id, id2]
-      
+
       assert transaction(fn ->
         find_with_all([:oof, :rab],
                       [:oof, :rab],
@@ -258,29 +258,29 @@ defmodule Exce.DbClient.MnesiaTest do
 
     test "find_with_any", %{id: id} = _context do
       id2 = new_entity()
-      
+
       transaction(fn ->
         write([id, id2], [:blarg, :blarb], [:blarg, :blarb], :meepmeep)
       end)
-      
+
       assert transaction(fn ->
         find_with_any([:blarg, :glarb])
       end) == [id, id2]
-      
+
       assert transaction(fn ->
         find_with_any([:glarb])
       end) == []
-      
+
       assert transaction(fn ->
         find_with_any([:blarg, :glarb], [:blarg, :glarb])
       end) == [id, id2]
-      
+
       assert transaction(fn ->
         find_with_any([:blarg, :glarb],
                       [:blarg, :glarb],
                       [&(&1 === :raboof), fn(_) -> true end])
       end) == [id, id2]
-      
+
       assert transaction(fn ->
         find_with_any([:blarg, :glarb],
                       [:blarg, :glarb],
@@ -298,14 +298,14 @@ defmodule Exce.DbClient.MnesiaTest do
       assert transaction(fn ->
         write([id, id2], [:foo, :bar], [:foo, :bar], :foobar)
       end) == :ok
-      
+
       assert transaction(fn ->
         read([id, id2])
       end) == [
-        {id, 
+        {id,
           %{foo: %{bar: :foobar, foo: :foobar},
             bar: %{bar: :foobar, foo: :foobar}}},
-        {id2, 
+        {id2,
           %{foo: %{bar: :foobar, foo: :foobar},
             bar: %{bar: :foobar, foo: :foobar}}}
       ]
@@ -313,10 +313,10 @@ defmodule Exce.DbClient.MnesiaTest do
       assert transaction(fn ->
         read([id, id2], [:foo, :bar])
       end) == [
-        {id, 
+        {id,
           %{foo: %{bar: :foobar, foo: :foobar},
             bar: %{bar: :foobar, foo: :foobar}}},
-        {id2, 
+        {id2,
           %{foo: %{bar: :foobar, foo: :foobar},
             bar: %{bar: :foobar, foo: :foobar}}}
       ]
@@ -324,10 +324,10 @@ defmodule Exce.DbClient.MnesiaTest do
       assert transaction(fn ->
         read([id, id2], [:foo, :bar], [:foo, :bar])
       end) == [
-        {id, 
+        {id,
           %{foo: %{bar: :foobar, foo: :foobar},
             bar: %{bar: :foobar, foo: :foobar}}},
-        {id2, 
+        {id2,
           %{foo: %{bar: :foobar, foo: :foobar},
             bar: %{bar: :foobar, foo: :foobar}}}
       ]
@@ -335,10 +335,10 @@ defmodule Exce.DbClient.MnesiaTest do
       assert transaction(fn ->
         read([id, id2], [:foo, :bar], [:foo])
       end) == [
-        {id, 
+        {id,
           %{foo: %{foo: :foobar},
             bar: %{foo: :foobar}}},
-        {id2, 
+        {id2,
           %{foo: %{foo: :foobar},
             bar: %{foo: :foobar}}}
       ]
@@ -346,9 +346,9 @@ defmodule Exce.DbClient.MnesiaTest do
       assert transaction(fn ->
         read([id, id2], [:foo], [:foo, :bar])
       end) == [
-        {id, 
+        {id,
           %{foo: %{bar: :foobar, foo: :foobar}}},
-        {id2, 
+        {id2,
           %{foo: %{bar: :foobar, foo: :foobar}}}
       ]
     end
@@ -363,22 +363,22 @@ defmodule Exce.DbClient.MnesiaTest do
       assert transaction(fn ->
         write([id], [:foo], [:bar], :foobar)
       end) == :ok
-      
+
       assert transaction(fn ->
         write([id, id2], [:foo], [:bar], :foobar)
       end) == :ok
-      
+
       assert transaction(fn ->
         write([id, id2], [:foo, :bar], [:bar, :foo], :foobar)
       end) == :ok
-      
+
       assert transaction(fn ->
         read([id, id2])
       end) == [
-        {id, 
+        {id,
           %{foo: %{bar: :foobar, foo: :foobar},
             bar: %{bar: :foobar, foo: :foobar}}},
-        {id2, 
+        {id2,
           %{foo: %{bar: :foobar, foo: :foobar},
             bar: %{bar: :foobar, foo: :foobar}}}
       ]

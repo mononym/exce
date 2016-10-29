@@ -1,6 +1,6 @@
-defmodule ExceTest do
+defmodule ExecsTest do
   use ExUnit.Case
-  doctest Exce
+  doctest Execs
 
   test "the truth" do
     assert 1 + 1 == 2

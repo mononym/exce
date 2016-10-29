@@ -1,8 +1,8 @@
-defmodule Exce.Mixfile do
+defmodule Exces.Mixfile do
   use Mix.Project
 
   def project do
-    [app: :exce,
+    [app: :execs,
      version: "0.1.0",
      elixir: "~> 1.3",
      build_embedded: Mix.env == :prod,

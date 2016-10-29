@@ -1,8 +1,12 @@
-defmodule Exce.DbClient.Mnesia do
+defmodule Execs.DbClient.Mnesia do
   @moduledoc false
-  
+
   require Record
   require Qlc
+
+  @entity_table Application.get_env(:execs, :entity_table_name)
+  @data_table Application.get_env(:execs, :data_table_name)
+  @purge_on_start Application.get_env(:execs, :purge_on_start)
 
   @entity [table: nil, autoincrement_id: nil]
   @data [id: nil, component: nil, key: nil, value: nil]
@@ -18,17 +22,29 @@ defmodule Exce.DbClient.Mnesia do
   # API
   #
 
+  # check for schema and create if not there
+      # check to see if databases exist
+      # check to see if should purge
+      # if should purge, delete databases
+      # create databases again
+
   def initialize do
-    case :mnesia.create_table(:entity, [attributes: @entity_fields]) do
-      {:atomic, :ok} -> :ok
-      {:aborted, {:already_exists, :entity}} -> :ok
+    if @purge_on_start do
+      :mnesia.clear_table(@entity_table)
+      :mnesia.clear_table(@data_table)
     end
-    case :mnesia.create_table(:data, [attributes: @data_fields, type: :bag]) do
+
+    case :mnesia.create_table(@entity_table, [attributes: @entity_fields]) do
+      {:atomic, :ok} -> :ok
+      {:aborted, {:already_exists, @entity_table}} -> :ok
+    end
+
+    case :mnesia.create_table(@data_table, [attributes: @data_fields, type: :bag]) do
       {:atomic, :ok} ->
-        {:atomic, :ok} = :mnesia.add_table_index(:data, :component)
-        {:atomic, :ok} = :mnesia.add_table_index(:data, :key)
+        {:atomic, :ok} = :mnesia.add_table_index(@data_table, :component)
+        {:atomic, :ok} = :mnesia.add_table_index(@data_table, :key)
         :ok
-      {:aborted, {:already_exists, :data}} ->
+      {:aborted, {:already_exists, @data_table}} ->
         :ok
     end
   end
@@ -46,7 +62,7 @@ defmodule Exce.DbClient.Mnesia do
   def create(), do: hd(create(1))
   def create(total) do
     for _ <- 1..total,
-      do: :mnesia.dirty_update_counter(:entity, :autoincrement_id, 1)
+      do: :mnesia.dirty_update_counter(@entity_table, :autoincrement_id, 1)
   end
 
 
@@ -56,9 +72,9 @@ defmodule Exce.DbClient.Mnesia do
     initial_results = for id <- ids, do: {id, %{}}
 
     entities = read(ids)
-    
-    Enum.each(ids, &(:mnesia.delete({:data, &1})))
-    
+
+    Enum.each(ids, &(:mnesia.delete({@data_table, &1})))
+
     Stream.concat(entities, initial_results)
     |> Enum.dedup_by(fn({id, _}) -> id end)
   end
@@ -70,7 +86,7 @@ defmodule Exce.DbClient.Mnesia do
     initial_results = for id <- ids, do: {id, %{}}
 
     entities = read(ids, components)
-    
+
     ickv_from_ic_query(ids, components)
     |> Qlc.e()
     |> Enum.each(fn({id, component, key, value}) ->
@@ -88,7 +104,7 @@ defmodule Exce.DbClient.Mnesia do
     initial_results = for id <- ids, do: {id, %{}}
 
     entities = read(ids, components, keys)
-    
+
     ickv_from_ick_query(ids, components, keys)
     |> Qlc.e()
     |> Enum.each(fn({id, component, key, value}) ->
@@ -248,7 +264,7 @@ defmodule Exce.DbClient.Mnesia do
   end
 
   # Listing components
-  
+
   def list(ids) do
     ic_from_i_query(ids)
     |> Qlc.e()
@@ -263,7 +279,7 @@ defmodule Exce.DbClient.Mnesia do
   end
 
   # Listing keys of components
-  
+
   def list(ids, components) do
     ick_from_ic_query(ids, components)
     |> Qlc.e()
@@ -283,7 +299,7 @@ defmodule Exce.DbClient.Mnesia do
   end
 
   # Finding entities
-  
+
   def find_with_all(components) do
     ic_from_c_query(components)
     |> Qlc.e()
@@ -375,7 +391,7 @@ defmodule Exce.DbClient.Mnesia do
   end
 
   # Reading whole components
-  
+
   def read(ids, components) do
     ickv_from_ic_query(ids, components)
     |> Qlc.e()
@@ -383,7 +399,7 @@ defmodule Exce.DbClient.Mnesia do
   end
 
   # Reading specific keys
-  
+
   def read(ids, components, keys) do
     ickv_from_ick_query(ids, components, keys)
     |> Qlc.e()
@@ -427,7 +443,7 @@ defmodule Exce.DbClient.Mnesia do
       Wanted_component =:= Component
     ]
     """
-    |> Qlc.q([Data: :mnesia.table(:data), Components: components])
+    |> Qlc.q([Data: :mnesia.table(@data_table), Components: components])
   end
 
   defp i_from_ck_query(components, keys) do
@@ -440,7 +456,7 @@ defmodule Exce.DbClient.Mnesia do
       Key =:= Wanted_key
     ]
     """
-    |> Qlc.q([Data: :mnesia.table(:data), Components: components, Keys: keys])
+    |> Qlc.q([Data: :mnesia.table(@data_table), Components: components, Keys: keys])
   end
 
   defp i_from_ic_query(ids, components) do
@@ -453,7 +469,7 @@ defmodule Exce.DbClient.Mnesia do
       Component =:= Wanted_component
     ]
     """
-    |> Qlc.q([Data: :mnesia.table(:data), Ids: ids, Components: components])
+    |> Qlc.q([Data: :mnesia.table(@data_table), Ids: ids, Components: components])
   end
 
   defp i_from_ick_query(ids, components, keys) do
@@ -468,7 +484,7 @@ defmodule Exce.DbClient.Mnesia do
       Key =:= Wanted_key
     ]
     """
-    |> Qlc.q([Data: :mnesia.table(:data),
+    |> Qlc.q([Data: :mnesia.table(@data_table),
               Ids: ids,
               Components: components,
               Keys: keys])
@@ -482,7 +498,7 @@ defmodule Exce.DbClient.Mnesia do
       Component =:= Wanted_component
     ]
     """
-    |> Qlc.q([Data: :mnesia.table(:data), Components: components])
+    |> Qlc.q([Data: :mnesia.table(@data_table), Components: components])
   end
 
   defp ic_from_i_query(ids) do
@@ -493,7 +509,7 @@ defmodule Exce.DbClient.Mnesia do
       Wanted_id =:= Id
     ]
     """
-    |> Qlc.q([Data: :mnesia.table(:data), Ids: ids])
+    |> Qlc.q([Data: :mnesia.table(@data_table), Ids: ids])
   end
 
   defp ic_from_ic_query(ids, components) do
@@ -506,7 +522,7 @@ defmodule Exce.DbClient.Mnesia do
       Component =:= Wanted_component
     ]
     """
-    |> Qlc.q([Data: :mnesia.table(:data), Ids: ids, Components: components])
+    |> Qlc.q([Data: :mnesia.table(@data_table), Ids: ids, Components: components])
   end
 
   defp iv_from_ck_query(components, keys) do
@@ -519,7 +535,7 @@ defmodule Exce.DbClient.Mnesia do
       Key =:= Wanted_key
     ]
     """
-    |> Qlc.q([Data: :mnesia.table(:data), Components: components, Keys: keys])
+    |> Qlc.q([Data: :mnesia.table(@data_table), Components: components, Keys: keys])
   end
 
   defp iv_from_ick_query(ids, components, keys) do
@@ -532,7 +548,7 @@ defmodule Exce.DbClient.Mnesia do
       Component =:= Wanted_component
     ]
     """
-    |> Qlc.q([Data: :mnesia.table(:data),
+    |> Qlc.q([Data: :mnesia.table(@data_table),
               Ids: ids,
               Components: components,
               Keys: keys])
@@ -548,7 +564,7 @@ defmodule Exce.DbClient.Mnesia do
       Wanted_component =:= Component
     ]
     """
-    |> Qlc.q([Data: :mnesia.table(:data), Ids: ids, Components: components])
+    |> Qlc.q([Data: :mnesia.table(@data_table), Ids: ids, Components: components])
   end
 
   defp ick_from_ick_query(ids, components, keys) do
@@ -563,7 +579,7 @@ defmodule Exce.DbClient.Mnesia do
       Key =:= Wanted_key
     ]
     """
-    |> Qlc.q([Data: :mnesia.table(:data),
+    |> Qlc.q([Data: :mnesia.table(@data_table),
               Ids: ids,
               Components: components,
               Keys: keys])
@@ -577,7 +593,7 @@ defmodule Exce.DbClient.Mnesia do
       Id =:= Wanted_id
     ]
     """
-    |> Qlc.q([Data: :mnesia.table(:data),
+    |> Qlc.q([Data: :mnesia.table(@data_table),
               Ids: ids])
   end
 
@@ -591,7 +607,7 @@ defmodule Exce.DbClient.Mnesia do
       Component =:= Wanted_component
     ]
     """
-    |> Qlc.q([Data: :mnesia.table(:data),
+    |> Qlc.q([Data: :mnesia.table(@data_table),
               Ids: ids,
               Components: components])
   end
@@ -608,7 +624,7 @@ defmodule Exce.DbClient.Mnesia do
       Key =:= Wanted_key
     ]
     """
-    |> Qlc.q([Data: :mnesia.table(:data),
+    |> Qlc.q([Data: :mnesia.table(@data_table),
               Ids: ids,
               Components: components,
               Keys: keys])

@@ -13,12 +13,4 @@ defmodule Execs.Initializer do
     :ok = @client.initialize()
     {:ok, %{}}
   end
-
-  def handle_call(_msg, _from, state) do
-    {:reply, :ok, state}
-  end
-
-  def handle_cast(_msg, state) do
-    {:noreply, state}
-  end
 end

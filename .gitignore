@@ -1,10 +1,13 @@
-/.idea
+# App Artifacts
 /_build
 /cover
 /deps
 /doc
 erl_crash.dump
-*.ez
-*.iml
 /Mnesia.*
 /config/prod.secret.exs
+*.ez
+
+# IDE Artifacts
+/.idea
+*.iml

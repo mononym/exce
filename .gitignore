@@ -6,3 +6,5 @@
 erl_crash.dump
 *.ez
 *.iml
+/Mnesia.*
+/config/prod.secret.exs

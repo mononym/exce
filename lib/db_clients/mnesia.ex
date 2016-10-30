@@ -69,21 +69,21 @@ defmodule Execs.DbClient.Mnesia do
   # Deleting entities
 
   def delete(ids) do
-    initial_results = for id <- ids, do: {id, %{}}
+    initial_results = for id <- ids, do: %{id: id, components: %{}}
 
     entities = read(ids)
 
     Enum.each(ids, &(:mnesia.delete({@data_table, &1})))
 
-    Stream.concat(entities, initial_results)
-    |> Enum.dedup_by(fn({id, _}) -> id end)
+    Enum.concat(entities, initial_results)
+    |> Enum.uniq_by(&(&1.id))
   end
 
 
   # Deleting components
 
   def delete(ids, components) do
-    initial_results = for id <- ids, do: {id, %{}}
+    initial_results = for id <- ids, do: %{id: id, components: %{}}
 
     entities = read(ids, components)
 
@@ -93,15 +93,15 @@ defmodule Execs.DbClient.Mnesia do
       :mnesia.delete_object(data(id: id, component: component, key: key, value: value))
     end)
 
-    Stream.concat(entities, initial_results)
-    |> Enum.dedup_by(fn({id, _}) -> id end)
+    Enum.concat(entities, initial_results)
+    |> Enum.uniq_by(&(&1.id))
   end
 
 
   # Deleting keys
 
   def delete(ids, components, keys) do
-    initial_results = for id <- ids, do: {id, %{}}
+    initial_results = for id <- ids, do: %{id: id, components: %{}}
 
     entities = read(ids, components, keys)
 
@@ -111,8 +111,8 @@ defmodule Execs.DbClient.Mnesia do
       :mnesia.delete_object(data(id: id, component: component, key: key, value: value))
     end)
 
-    Stream.concat(entities, initial_results)
-    |> Enum.dedup_by(fn({id, _}) -> id end)
+    Enum.concat(entities, initial_results)
+    |> Enum.uniq_by(&(&1.id))
   end
 
 
@@ -128,17 +128,18 @@ defmodule Execs.DbClient.Mnesia do
       Map.update(results, id, 0, &(&1 + 1))
     end)
     |> Enum.map(fn({id, count_passed}) ->
-      {id, count_passed === length(components)}
+      %{id: id, result: count_passed === length(components)}
     end)
   end
 
   def has_any(ids, components) do
     for id <- Qlc.e(i_from_ic_query(ids, components)),
-      into: Map.new(ids, &({&1, false}))
-      do
+      into: Map.new(ids, &({&1, false})) do
       {id, true}
     end
-    |> Map.to_list()
+    |> Enum.map(fn({id, result}) ->
+      %{id: id, result: result}
+    end)
   end
 
   def has_which(ids, components) do
@@ -148,10 +149,11 @@ defmodule Execs.DbClient.Mnesia do
     ic_from_ic_query(ids, components)
     |> Qlc.e()
     |> Enum.reduce(initial_results, fn({id, component}, results) ->
-      results
-      |> put_in([id, component], true)
+      put_in(results, [id, component], true)
     end)
-    |> Map.to_list()
+    |> Enum.map(fn({id, components}) ->
+      %{id: id, components: components}
+    end)
   end
 
 
@@ -168,7 +170,7 @@ defmodule Execs.DbClient.Mnesia do
       Map.update(results, id, 0, &(&1 + 1))
     end)
     |> Enum.map(fn({id, count_passed}) ->
-      {id, count_passed === length(components) * length(keys)}
+      %{id: id, result: count_passed === length(components) * length(keys)}
     end)
   end
 
@@ -176,11 +178,13 @@ defmodule Execs.DbClient.Mnesia do
                components,
                keys) do
     for id <- Qlc.e(i_from_ick_query(ids, components, keys)),
-      into: Map.new(ids, &({&1, false}))
-      do
+      into: Map.new(ids, &({&1, false})) do
       {id, true}
     end
-    |> Map.to_list()
+    |> Stream.map(fn({id, nil}) -> {id, false}; (result) -> result end)
+    |> Enum.map(fn({id, result}) ->
+      %{id: id, result: result}
+    end)
   end
 
   def has_which(ids,
@@ -195,7 +199,9 @@ defmodule Execs.DbClient.Mnesia do
     |> Enum.reduce(initial_results, fn({id, component, key}, results) ->
       put_in(results, [id, component, key], true)
     end)
-    |> Map.to_list()
+    |> Enum.map(fn({id, components}) ->
+      %{id: id, components: components}
+    end)
   end
 
 
@@ -218,7 +224,7 @@ defmodule Execs.DbClient.Mnesia do
       |> (&(Map.update(results, id, 0, fn(num) -> num + &1 end))).()
     end)
     |> Enum.map(fn({id, count_passed}) ->
-      {id, count_passed === length(components) * length(keys)}
+      %{id: id, result: count_passed === length(components) * length(keys)}
     end)
   end
 
@@ -240,7 +246,10 @@ defmodule Execs.DbClient.Mnesia do
           (_) -> &1
       end))).()
     end)
-    |> Enum.map(fn({id, nil}) -> {id, false}; (result) -> result end)
+    |> Stream.map(fn({id, nil}) -> {id, false}; (result) -> result end)
+    |> Enum.map(fn({id, result}) ->
+      %{id: id, result: result}
+    end)
   end
 
   def has_which(ids,
@@ -260,7 +269,9 @@ defmodule Execs.DbClient.Mnesia do
       end)
       |> (&(put_in(results, [id, component, key], &1))).()
     end)
-    |> Map.to_list()
+    |> Enum.map(fn({id, components}) ->
+      %{id: id, components: components}
+    end)
   end
 
   # Listing components
@@ -274,29 +285,29 @@ defmodule Execs.DbClient.Mnesia do
       |> update_in([id], &(MapSet.put(&1, component)))
     end)
     |> Enum.map(fn({id, components}) ->
-      {id, MapSet.to_list(components)}
+      %{id: id, components: MapSet.to_list(components)}
     end)
   end
 
   # Listing keys of components
 
   def list(ids, components) do
-    ick_from_ic_query(ids, components)
-    |> Qlc.e()
-    |> Enum.reduce(%{}, fn({id, component, key}, results) ->
-      Map.put_new(results, id, %{})
-      |> update_in([id], &(Map.put_new(&1, component, MapSet.new())))
-      |> update_in([id, component], &(MapSet.put(&1, key)))
-    end)
-    |> Enum.map(fn({id, comps}) ->
-      for {component, keys} <- comps,
-        into: %{}
-        do
-        {component, MapSet.to_list(keys)}
-      end
-      |> (&({id, &1})).()
-    end)
-  end
+      ick_from_ic_query(ids, components)
+      |> Qlc.e()
+      |> Enum.reduce(%{}, fn({id, component, key}, results) ->
+        Map.put_new(results, id, %{})
+        |> update_in([id], &(Map.put_new(&1, component, MapSet.new())))
+        |> update_in([id, component], &(MapSet.put(&1, key)))
+      end)
+      |> Enum.map(fn({id, comps}) ->
+        for {component, keys} <- comps,
+          into: %{}
+          do
+          {component, MapSet.to_list(keys)}
+        end
+        |> (&(%{id: id, components: &1})).()
+      end)
+    end
 
   # Finding entities
 
@@ -416,6 +427,8 @@ defmodule Execs.DbClient.Mnesia do
       data(id: id, component: component, key: key, value: value)
       |> :mnesia.write()
     end)
+
+    ids
   end
 
 
@@ -432,7 +445,9 @@ defmodule Execs.DbClient.Mnesia do
       |> update_in([id], &(Map.put_new(&1, component, %{})))
       |> update_in([id, component], &(Map.put(&1, key, value)))
     end)
-    |> Map.to_list()
+    |> Enum.map(fn{id, components} ->
+      %{id: id, components: components}
+    end)
   end
 
   defp i_from_c_query(components) do

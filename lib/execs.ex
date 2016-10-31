@@ -30,8 +30,11 @@ defmodule Execs do
 
   def transaction(block), do: @client.transaction(block)
 
+  # create
+
   def create, do: hd(create(1))
   def create(n), do: @client.create(n)
+
 
   # delete
 
@@ -53,6 +56,7 @@ defmodule Execs do
   def delete(id, components, keys) do
     hd(delete([id], components, keys))
   end
+
 
   # has_all
 
@@ -76,6 +80,7 @@ defmodule Execs do
     hd(has_all([id], components, keys, functions))
   end
 
+
   # has_any
 
   def has_any(ids, components) when is_list(ids) do
@@ -97,6 +102,7 @@ defmodule Execs do
   def has_any(id, components, keys, functions) do
     hd(has_any([id], components, keys, functions))
   end
+
 
   # has_which
 
@@ -120,6 +126,7 @@ defmodule Execs do
     hd(has_which([id], components, keys, functions))
   end
 
+
   # list
 
   def list(ids) when is_list(ids), do: @client.list(ids)
@@ -130,6 +137,7 @@ defmodule Execs do
   end
 
   def list(id, components), do: hd(list([id], components))
+
 
   # find_with_all
 
@@ -145,6 +153,7 @@ defmodule Execs do
     @client.find_with_all(components, keys, functions)
   end
 
+
   # find_with_any
 
   def find_with_any(components) do
@@ -158,6 +167,7 @@ defmodule Execs do
   def find_with_any(components, keys, functions) do
     @client.find_with_any(components, keys, functions)
   end
+
 
   # read
 
@@ -175,6 +185,7 @@ defmodule Execs do
   end
 
   def read(id, components, keys), do: hd(read([id], components, keys))
+
 
   # write
 

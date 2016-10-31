@@ -22,6 +22,7 @@ defmodule Execs.DbClient.Mnesia do
   # API
   #
 
+
   def initialize do
     if @purge_on_start do
       :mnesia.clear_table(@entity_table)
@@ -50,6 +51,7 @@ defmodule Execs.DbClient.Mnesia do
       error_result -> error_result
     end
   end
+
 
   # Creating entities
 

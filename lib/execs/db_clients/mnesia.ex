@@ -22,12 +22,6 @@ defmodule Execs.DbClient.Mnesia do
   # API
   #
 
-  # check for schema and create if not there
-      # check to see if databases exist
-      # check to see if should purge
-      # if should purge, delete databases
-      # create databases again
-
   def initialize do
     if @purge_on_start do
       :mnesia.clear_table(@entity_table)

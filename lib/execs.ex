@@ -59,7 +59,7 @@ defmodule Execs do
   end
 
   @doc """
-  Delete a set of keys from a set of components and belonging to a set of entities.
+  Delete a set of keys from a set of components which belong to a set of entities.
   """
   def delete(ids, components, keys) when is_list(ids) do
     MC.delete(ids, enforce_list(components), enforce_list(keys))

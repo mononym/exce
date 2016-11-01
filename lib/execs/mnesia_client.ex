@@ -1,4 +1,4 @@
-defmodule Execs.DbClient.Mnesia do
+defmodule Execs.MnesiaClient do
   @moduledoc false
 
   require Record

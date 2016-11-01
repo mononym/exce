@@ -1,7 +1,5 @@
 defmodule Execs do
-  use Application
-
-  @client Application.get_env(:execs, :client_module)
+  alias Execs.MnesiaClient, as: MC
 
 
   #
@@ -26,23 +24,23 @@ defmodule Execs do
   #
 
 
-  def initialize, do: @client.initialize()
+  def initialize, do: MC.initialize()
 
-  def transaction(block), do: @client.transaction(block)
+  def transaction(block), do: MC.transaction(block)
 
   # create
 
   def create, do: hd(create(1))
-  def create(n), do: @client.create(n)
+  def create(n), do: MC.create(n)
 
 
   # delete
 
-  def delete(ids) when is_list(ids), do: @client.delete(ids)
+  def delete(ids) when is_list(ids), do: MC.delete(ids)
   def delete(id), do: hd(delete([id]))
 
   def delete(ids, components) when is_list(ids) do
-    @client.delete(ids, enforce_list(components))
+    MC.delete(ids, enforce_list(components))
   end
 
   def delete(id, components) do
@@ -50,7 +48,7 @@ defmodule Execs do
   end
 
   def delete(ids, components, keys) when is_list(ids) do
-    @client.delete(ids, enforce_list(components), enforce_list(keys))
+    MC.delete(ids, enforce_list(components), enforce_list(keys))
   end
 
   def delete(id, components, keys) do
@@ -61,19 +59,19 @@ defmodule Execs do
   # has_all
 
   def has_all(ids, components) when is_list(ids) do
-    @client.has_all(ids, enforce_list(components))
+    MC.has_all(ids, enforce_list(components))
   end
 
   def has_all(id, components), do: hd(has_all([id], components))
 
   def has_all(ids, components, keys) when is_list(ids) do
-    @client.has_all(ids, enforce_list(components), enforce_list(keys))
+    MC.has_all(ids, enforce_list(components), enforce_list(keys))
   end
 
   def has_all(id, components, keys), do: hd(has_all([id], components, keys))
 
   def has_all(ids, components, keys, functions) when is_list(ids) do
-    @client.has_all(ids, enforce_list(components), enforce_list(keys), enforce_list(functions))
+    MC.has_all(ids, enforce_list(components), enforce_list(keys), enforce_list(functions))
   end
 
   def has_all(id, components, keys, functions) do
@@ -84,19 +82,19 @@ defmodule Execs do
   # has_any
 
   def has_any(ids, components) when is_list(ids) do
-    @client.has_any(ids, enforce_list(components))
+    MC.has_any(ids, enforce_list(components))
   end
 
   def has_any(id, components), do: hd(has_any([id], components))
 
   def has_any(ids, components, keys) when is_list(ids) do
-    @client.has_any(ids, enforce_list(components), enforce_list(keys))
+    MC.has_any(ids, enforce_list(components), enforce_list(keys))
   end
 
   def has_any(id, components, keys), do: hd(has_any([id], components, keys))
 
   def has_any(ids, components, keys, functions) when is_list(ids) do
-    @client.has_any(ids, enforce_list(components), enforce_list(keys), enforce_list(functions))
+    MC.has_any(ids, enforce_list(components), enforce_list(keys), enforce_list(functions))
   end
 
   def has_any(id, components, keys, functions) do
@@ -107,19 +105,19 @@ defmodule Execs do
   # has_which
 
   def has_which(ids, components) when is_list(ids) do
-    @client.has_which(ids, enforce_list(components))
+    MC.has_which(ids, enforce_list(components))
   end
 
   def has_which(id, components), do: hd(has_which([id], components))
 
   def has_which(ids, components, keys) when is_list(ids) do
-    @client.has_which(ids, enforce_list(components), enforce_list(keys))
+    MC.has_which(ids, enforce_list(components), enforce_list(keys))
   end
 
   def has_which(id, components, keys), do: hd(has_which([id], components, keys))
 
   def has_which(ids, components, keys, functions) when is_list(ids) do
-    @client.has_which(ids, enforce_list(components), enforce_list(keys), enforce_list(functions))
+    MC.has_which(ids, enforce_list(components), enforce_list(keys), enforce_list(functions))
   end
 
   def has_which(id, components, keys, functions) do
@@ -129,11 +127,11 @@ defmodule Execs do
 
   # list
 
-  def list(ids) when is_list(ids), do: @client.list(ids)
+  def list(ids) when is_list(ids), do: MC.list(ids)
   def list(id), do: hd(list([id]))
 
   def list(ids, components) when is_list(ids) do
-    @client.list(ids, enforce_list(components))
+    MC.list(ids, enforce_list(components))
   end
 
   def list(id, components), do: hd(list([id], components))
@@ -142,46 +140,48 @@ defmodule Execs do
   # find_with_all
 
   def find_with_all(components) do
-    @client.find_with_all(components)
+    MC.find_with_all(enforce_list(components))
   end
 
   def find_with_all(components, keys) do
-    @client.find_with_all(components, keys)
+    MC.find_with_all(enforce_list(components), enforce_list(keys))
   end
 
   def find_with_all(components, keys, functions) do
-    @client.find_with_all(components, keys, functions)
+    MC.find_with_all(enforce_list(components),
+                     enforce_list(keys),
+                     enforce_list(functions))
   end
 
 
   # find_with_any
 
   def find_with_any(components) do
-    @client.find_with_any(components)
+    MC.find_with_any(enforce_list(components))
   end
 
   def find_with_any(components, keys) do
-    @client.find_with_any(components, keys)
+    MC.find_with_any(enforce_list(components), enforce_list(keys))
   end
 
   def find_with_any(components, keys, functions) do
-    @client.find_with_any(components, keys, functions)
+    MC.find_with_any(enforce_list(components), enforce_list(keys), enforce_list(functions))
   end
 
 
   # read
 
-  def read(ids) when is_list(ids), do: @client.read(ids)
+  def read(ids) when is_list(ids), do: MC.read(ids)
   def read(id), do: hd(read([id]))
 
   def read(ids, components) when is_list(ids) do
-    @client.read(ids, enforce_list(components))
+    MC.read(ids, enforce_list(components))
   end
 
   def read(id, components), do: hd(read([id], components))
 
   def read(ids, components, keys) when is_list(ids) do
-    @client.read(ids, enforce_list(components), enforce_list(keys))
+    MC.read(ids, enforce_list(components), enforce_list(keys))
   end
 
   def read(id, components, keys), do: hd(read([id], components, keys))
@@ -190,7 +190,7 @@ defmodule Execs do
   # write
 
   def write(ids, components, keys, value) when is_list(ids) do
-    @client.write(ids, enforce_list(components), enforce_list(keys), value)
+    MC.write(ids, enforce_list(components), enforce_list(keys), value)
   end
 
   def write(id, components, keys, value) do

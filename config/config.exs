@@ -22,7 +22,6 @@ use Mix.Config
 #
 
 config :execs,
-  client_module: Execs.DbClient.Mnesia,
   data_table_name: :data,
   entity_table_name: :entity,
   purge_on_start: false

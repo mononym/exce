@@ -31,7 +31,7 @@ defmodule Exces.Mixfile do
   defp package do
     [
      name: :execs,
-     files: ["lib", "priv", "mix.exs", "README*", "LICENSE*"],
+     files: ["lib", "mix.exs", "README*", "LICENSE*"],
      maintainers: ["Chris Hicks"],
      licenses: ["MIT"],
      links: %{"GitHub" => "https://github.com/mononym/execs"}]

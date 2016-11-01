@@ -45,10 +45,6 @@ defmodule Execs do
   Delete a set of entities and all their data.
   """
   def delete(ids) when is_list(ids), do: MC.delete(ids)
-
-  @doc """
-  Delete an entity and all its data.
-  """
   def delete(id), do: hd(delete([id]))
 
   @doc """
@@ -58,9 +54,6 @@ defmodule Execs do
     MC.delete(ids, enforce_list(components))
   end
 
-  @doc """
-  Delete a set of components and all their data from an entity.
-  """
   def delete(id, components) do
     hd(delete([id], components))
   end
@@ -72,9 +65,6 @@ defmodule Execs do
     MC.delete(ids, enforce_list(components), enforce_list(keys))
   end
 
-  @doc """
-  Delete a set of keys from a set of components and belonging to an entity.
-  """
   def delete(id, components, keys) do
     hd(delete([id], components, keys))
   end
@@ -86,9 +76,6 @@ defmodule Execs do
     MC.has_all(ids, enforce_list(components))
   end
 
-  @doc """
-  Check to see if an entity has a set of components.
-  """
   def has_all(id, components), do: hd(has_all([id], components))
 
   @doc """
@@ -98,9 +85,6 @@ defmodule Execs do
     MC.has_all(ids, enforce_list(components), enforce_list(keys))
   end
 
-  @doc """
-  Check to see if an entity has set of keys.
-  """
   def has_all(id, components, keys), do: hd(has_all([id], components, keys))
 
   @doc """
@@ -112,11 +96,6 @@ defmodule Execs do
     MC.has_all(ids, enforce_list(components), enforce_list(keys), enforce_list(functions))
   end
 
-  @doc """
-  Check to see if an entity has set of keys. The value associated with the each key
-  is passed to each of the comparison functions. If all functions return true then there is
-  a match.
-  """
   def has_all(id, components, keys, functions) do
     hd(has_all([id], components, keys, functions))
   end
@@ -128,9 +107,6 @@ defmodule Execs do
     MC.has_any(ids, enforce_list(components))
   end
 
-  @doc """
-  Check to see if an entity has at least one of a set of components.
-  """
   def has_any(id, components), do: hd(has_any([id], components))
 
   @doc """
@@ -140,9 +116,6 @@ defmodule Execs do
     MC.has_any(ids, enforce_list(components), enforce_list(keys))
   end
 
-  @doc """
-  Check to see if an entity has at least one of a set of keys.
-  """
   def has_any(id, components, keys), do: hd(has_any([id], components, keys))
 
   @doc """
@@ -154,11 +127,6 @@ defmodule Execs do
     MC.has_any(ids, enforce_list(components), enforce_list(keys), enforce_list(functions))
   end
 
-  @doc """
-  Check to see if an entity has at least one of a set of keys. The value associated
-  with the each key is passed to each of the comparison functions. If all functions return
-  true then there is a match.
-  """
   def has_any(id, components, keys, functions) do
     hd(has_any([id], components, keys, functions))
   end
@@ -170,9 +138,6 @@ defmodule Execs do
     MC.has_which(ids, enforce_list(components))
   end
 
-  @doc """
-  Check to see which of a set of components an entity has.
-  """
   def has_which(id, components), do: hd(has_which([id], components))
 
   @doc """
@@ -182,9 +147,6 @@ defmodule Execs do
     MC.has_which(ids, enforce_list(components), enforce_list(keys))
   end
 
-  @doc """
-  Check to see which of a set of keys an entity has.
-  """
   def has_which(id, components, keys), do: hd(has_which([id], components, keys))
 
   @doc """
@@ -196,11 +158,6 @@ defmodule Execs do
     MC.has_which(ids, enforce_list(components), enforce_list(keys), enforce_list(functions))
   end
 
-  @doc """
-  Check to see which of a set of keys an entity has. The value associated
-  with the each key is passed to each of the comparison functions. If all functions return
-  true then there is a match.
-  """
   def has_which(id, components, keys, functions) do
     hd(has_which([id], components, keys, functions))
   end
@@ -210,9 +167,6 @@ defmodule Execs do
   """
   def list(ids) when is_list(ids), do: MC.list(ids)
 
-  @doc """
-  List the components of an entity.
-  """
   def list(id), do: hd(list([id]))
 
   @doc """
@@ -222,9 +176,6 @@ defmodule Execs do
     MC.list(ids, enforce_list(components))
   end
 
-  @doc """
-  List the keys belonging to a set of components of an entity.
-  """
   def list(id, components), do: hd(list([id], components))
 
   @doc """
@@ -280,9 +231,6 @@ defmodule Execs do
   """
   def read(ids) when is_list(ids), do: MC.read(ids)
 
-  @doc """
-  Read an entity.
-  """
   def read(id), do: hd(read([id]))
 
   @doc """
@@ -292,9 +240,6 @@ defmodule Execs do
     MC.read(ids, enforce_list(components))
   end
 
-  @doc """
-  Read a set of components belonging to an entity.
-  """
   def read(id, components), do: hd(read([id], components))
 
   @doc """
@@ -304,9 +249,6 @@ defmodule Execs do
     MC.read(ids, enforce_list(components), enforce_list(keys))
   end
 
-  @doc """
-  Read a set of keys belonging to an entity.
-  """
   def read(id, components, keys), do: hd(read([id], components, keys))
 
   @doc """
@@ -316,9 +258,6 @@ defmodule Execs do
     MC.write(ids, enforce_list(components), enforce_list(keys), value)
   end
 
-  @doc """
-  Write a value to any combination of keys and components of an entity.
-  """
   def write(id, components, keys, value) do
     hd(write([id], components, keys, value))
   end

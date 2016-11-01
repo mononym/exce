@@ -390,7 +390,7 @@ defmodule ExecsTest do
   end
 
   defp setup_database(_context) do
-    initialize()
+    Execs.MnesiaClient.initialize()
   end
 
   defp new_entity do

@@ -6,7 +6,7 @@ defmodule Execs do
   # Application callback
   #
 
-
+  @doc false
   def start(_type, _args) do
     import Supervisor.Spec, warn: false
 

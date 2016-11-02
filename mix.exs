@@ -13,7 +13,11 @@ defmodule Exces.Mixfile do
   end
 
   def application do
-    [applications: [:logger, :mnesia]]
+    [applications: [:mnesia],
+     env: [ai_table_name: :ai_table,
+           data_table_name: :data_table,
+           db_client: Execs.DbClient.Mnesia,
+           purge_data_on_start: false]]
   end
 
   defp deps do
@@ -24,8 +28,7 @@ defmodule Exces.Mixfile do
   defp description do
     """
     Provides an interface for reading and writing data in an Entity Component System. Note that it is up to the
-    consuming application to implement the 'Systems' as this package simply makes working with data easier. Uses Mnesia
-    disc_copy tables.
+    consuming application to implement the 'Systems' as this package simply makes working with data easier.
     """
   end
 

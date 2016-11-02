@@ -1,9 +1,7 @@
 defmodule ExecsTest do
   import Execs
-  use ExUnit.Case
+  use ExUnit.Case, async: true
   doctest Execs
-
-  setup_all [:setup_database]
 
   describe "delete tests:" do
     setup [:setup_context]
@@ -14,7 +12,7 @@ defmodule ExecsTest do
     end
 
     test "delete nonempty entity", %{id: id} = _context do
-      assert transaction(fn -> write([id], [:foo], [:bar], :foobar) end) == [id]
+      assert transaction(fn -> write(id, [:foo], [:bar], :foobar) end) == id
 
       assert transaction(fn ->
         delete(id)
@@ -387,10 +385,6 @@ defmodule ExecsTest do
 
   defp setup_context(_context) do
     %{id: new_entity()}
-  end
-
-  defp setup_database(_context) do
-    Execs.MnesiaClient.initialize()
   end
 
   defp new_entity do

@@ -37,7 +37,7 @@ Execs.transaction(fn ->
   Execs.write(id, [:foo, :bar], :bar, :foobar)
 end)
 
-# Write a value to multiple key, of multiple component, of multiple entities 
+# Write a value to multiple keys, of multiple component, of multiple entities 
 Execs.transaction(fn ->
   Execs.write([id, id2], [:foo, :bar], [:foo, :bar], :foobar)
 end)

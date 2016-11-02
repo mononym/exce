@@ -1,4 +1,8 @@
 # Execs
+
+[![Hex.pm Version](http://img.shields.io/hexpm/v/execs.svg?style=flat)](https://hex.pm/packages/execs)
+[![Inline docs](http://inch-ci.org/github/mononym/execs.svg)](http://inch-ci.org/github/mononym/execs)
+
 Elixir Entity Component System. Abstracts away the mechanisms used to store, lookup, and retrieve data in an Entity-Component System.
 
 Note that this application only provides the mechanisms for working with data and expects the consuming application to provide the "System" part of the equation.

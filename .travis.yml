@@ -3,3 +3,9 @@ elixir:
   - 1.3.3
 otp_release:
   - 19.0
+before_script:
+  - mix execs.schema.create
+  - mix execs.tables.create
+after_script:
+  - mix execs.tables.drop
+  - mix execs.schema.delete

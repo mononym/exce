@@ -1,5 +1,6 @@
 # Execs
 
+[![Build Status](https://travis-ci.org/mononym/execs.svg?branch=master)](https://travis-ci.org/mononym/execs)
 [![Hex.pm Version](http://img.shields.io/hexpm/v/execs.svg?style=flat)](https://hex.pm/packages/execs)
 [![Inline docs](http://inch-ci.org/github/mononym/execs.svg)](http://inch-ci.org/github/mononym/execs)
 

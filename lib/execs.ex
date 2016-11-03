@@ -192,7 +192,7 @@ defmodule Execs do
   @doc """
   Check to see which of a set of components a set of entities has.
   """
-  @spec has_which(ids, component_list) :: component_match_list
+  @spec has_which(id_list, component_list) :: component_match_list
   def has_which(ids, components) when is_list(ids) do
     client().has_which(ids, enforce_list(components))
   end
@@ -203,7 +203,7 @@ defmodule Execs do
   @doc """
   Check to see which of a set of keys a set of entities has.
   """
-  @spec has_which(ids, component_list, key_list) :: component_match_list
+  @spec has_which(id_list, component_list, key_list) :: component_match_list
   def has_which(ids, components, keys) when is_list(ids) do
     client().has_which(ids, enforce_list(components), enforce_list(keys))
   end
@@ -216,7 +216,7 @@ defmodule Execs do
   with the each key is passed to each of the comparison functions. If all functions return
   true then there is a match.
   """
-  @spec has_which(ids, component_list, key_list, fun_list) :: component_match_list
+  @spec has_which(id_list, component_list, key_list, fun_list) :: component_match_list
   def has_which(ids, components, keys, functions) when is_list(ids) do
     client().has_which(ids, enforce_list(components), enforce_list(keys), enforce_list(functions))
   end

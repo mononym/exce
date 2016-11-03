@@ -9,3 +9,5 @@ before_script:
 after_script:
   - mix execs.tables.drop
   - mix execs.schema.delete
+  - mix deps.get --only docs
+  - MIX_ENV=docs mix inch.report

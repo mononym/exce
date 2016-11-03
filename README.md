@@ -10,13 +10,24 @@ Note that this application only provides the mechanisms for working with data an
 
 **WARNING**: This software is new and has been minimally tested.
 
-## Using
+## Including as Dependency
 
 ```elixir
 defp deps do
   [{:execs, "~> 0.2.0"}]
 end
 ```
+
+## Managing database
+
+There are four mix tasks provided as hooks for managing the lifecycle of the database:
+* execs.schema.create
+* execs.schema.delete
+* execs.tables.create
+* execs.tables.drop
+
+Which hooks to run will depend on the client being used. In the case of the
+Mnesia (default) client, a schema must first be created and then the tables can be created.
 
 ## Configuration
 There are a few possible configuration values, with sensible defaults, for this package:

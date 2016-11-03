@@ -21,7 +21,7 @@ defmodule Exces.Mixfile do
   end
 
   defp deps do
-    [{:ex_doc, ">= 0.14.3", only: :docs},
+    [{:ex_doc, ">= 0.14.3", only: :dev},
      {:inch_ex, only: :docs},
      {:qlc, "~> 1.0"}]
   end

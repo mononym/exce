@@ -3,6 +3,7 @@ defmodule Execs.Utils do
 
   defmacro __using__(_) do
     quote do
+      @doc false
       def cfg(key), do: Application.get_env(:execs, key)
     end
   end

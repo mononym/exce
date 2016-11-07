@@ -14,7 +14,7 @@ Note that this application only provides the mechanisms for working with data an
 
 ```elixir
 defp deps do
-  [{:execs, "~> 0.2.0"}]
+  [{:execs, "~> 0.3.0"}]
 end
 ```
 
@@ -61,5 +61,10 @@ end)
 # Read an entire entity from database 
 Execs.transaction(fn ->
   Execs.read(id)
+end)
+
+# Read the value of a single key from database 
+Execs.transaction(fn ->
+  Execs.read(id, :foo, :bar)
 end)
 ```

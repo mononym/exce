@@ -20,14 +20,18 @@ end
 
 ## Managing database
 
-There are four mix tasks provided as hooks for managing the lifecycle of the database:
+There are six mix tasks provided as hooks for managing the lifecycle of the database:
 * execs.schema.create
 * execs.schema.delete
 * execs.tables.create
-* execs.tables.drop
+* execs.tables.drop 
+* execs.setup
+* execs.teardown
 
 Which hooks to run will depend on the client being used. In the case of the
 Mnesia (default) client, a schema must first be created and then the tables can be created.
+
+The setup/teardown tasks run both the schema and table creation and destruction tasks respectively.
 
 ## Configuration
 There are a few possible configuration values, with sensible defaults, for this package:

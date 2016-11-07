@@ -316,11 +316,20 @@ defmodule Execs do
   def read(id, components), do: hd(read([id], components))
 
   @doc """
-  Read a set of keys belonging to a set of entities.
+  Read a set of keys belonging to a set of entities. Providing anything other
+  than a single id, component, and key will return a map otherwise a single
+  value is returned.
   """
-  @spec read(maybe_id_list, maybe_component_list, maybe_key_list) :: maybe_entity_list
+  @spec read(maybe_id_list, maybe_component_list, maybe_key_list) :: maybe_entity_list | any()
   def read(ids, components, keys) when is_list(ids) do
     client().read(ids, enforce_list(components), enforce_list(keys))
+  end
+
+  def read(id, component, key)
+      when is_list(component) == false
+      and is_list(key) == false do
+    entity = hd(read([id], component, key))
+    entity[:components][component][key]
   end
 
   def read(id, components, keys), do: hd(read([id], components, keys))

@@ -347,6 +347,10 @@ defmodule ExecsTest do
       end) ==
         %{id: id,
           components: %{foo: %{bar: :foobar, foo: :foobar}}}
+
+      assert transaction(fn ->
+        read(id, :foo, :foo)
+      end) == :foobar
     end
   end
 

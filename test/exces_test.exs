@@ -65,11 +65,11 @@ defmodule ExecsTest do
 
         assert transaction(fn ->
           has_all(id, [:bar])
-        end) == %{id: id, result: true}
+        end) == true
 
         assert transaction(fn ->
           has_all(id, [:bar, :foo])
-        end) == %{id: id, result: true}
+        end) == true
 
         assert transaction(fn ->
           has_all([id, id2], [:bar, :foo])
@@ -112,15 +112,15 @@ defmodule ExecsTest do
 
         assert transaction(fn ->
           has_any(id, [:bar])
-        end) == %{id: id, result: true}
+        end) == true
 
         assert transaction(fn ->
           has_any(id, [:bar, :baz])
-        end) == %{id: id, result: true}
+        end) == true
 
         assert transaction(fn ->
           has_any(id, [:baz])
-        end) == %{id: id, result: false}
+        end) == false
 
         assert transaction(fn ->
           has_any([id, id2], [:bar, :baz])

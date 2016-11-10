@@ -14,7 +14,7 @@ Note that this application only provides the mechanisms for working with data an
 
 ```elixir
 defp deps do
-  [{:execs, "~> 0.3.0"}]
+  [{:execs, "~> 0.4.0"}]
 end
 ```
 

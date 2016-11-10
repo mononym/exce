@@ -124,126 +124,6 @@ defmodule Execs do
   end
 
   @doc """
-  Check to see if a set of entities has a set of components.
-  """
-  @spec has_all(maybe_id_list, maybe_component_list) :: maybe_id_match_list
-  def has_all(ids, components) when is_list(ids) do
-    client().has_all(ids, enforce_list(components))
-  end
-
-  def has_all(id, components), do: hd(has_all([id], components))
-
-  @doc """
-  Check to see if a set of entities has set of keys.
-  """
-  @spec has_all(maybe_id_list, maybe_component_list, maybe_key_list) :: maybe_id_match_list
-  def has_all(ids, components, keys) when is_list(ids) do
-    client().has_all(ids, enforce_list(components), enforce_list(keys))
-  end
-
-  def has_all(id, components, keys), do: hd(has_all([id], components, keys))
-
-  @doc """
-  Check to see if a set of entities has set of keys. The value associated with the each key
-  is passed to each of the comparison functions. If all functions return true then there is
-  a match.
-  """
-  @spec has_all(maybe_id_list, maybe_component_list, maybe_key_list, maybe_fun_list) :: maybe_id_match_list
-  def has_all(ids, components, keys, functions) when is_list(ids) do
-    client().has_all(ids, enforce_list(components), enforce_list(keys), enforce_list(functions))
-  end
-
-  def has_all(id, components, keys, functions) do
-    hd(has_all([id], components, keys, functions))
-  end
-
-  @doc """
-  Check to see if a set of entities has at least one of a set of components.
-  """
-  @spec has_any(maybe_id_list, maybe_component_list) :: maybe_id_match_list
-  def has_any(ids, components) when is_list(ids) do
-    client().has_any(ids, enforce_list(components))
-  end
-
-  def has_any(id, components), do: hd(has_any([id], components))
-
-  @doc """
-  Check to see if a set of entities has at least one of a set of keys.
-  """
-  @spec has_any(maybe_id_list, maybe_component_list, maybe_key_list) :: maybe_id_match_list
-  def has_any(ids, components, keys) when is_list(ids) do
-    client().has_any(ids, enforce_list(components), enforce_list(keys))
-  end
-
-  def has_any(id, components, keys), do: hd(has_any([id], components, keys))
-
-  @doc """
-  Check to see if a set of entities has at least one of a set of keys. The value associated
-  with the each key is passed to each of the comparison functions. If all functions return
-  true then there is a match.
-  """
-  @spec has_any(maybe_id_list, maybe_component_list, maybe_key_list, maybe_fun_list) :: maybe_id_match_list
-  def has_any(ids, components, keys, functions) when is_list(ids) do
-    client().has_any(ids, enforce_list(components), enforce_list(keys), enforce_list(functions))
-  end
-
-  def has_any(id, components, keys, functions) do
-    hd(has_any([id], components, keys, functions))
-  end
-
-  @doc """
-  Check to see which of a set of components a set of entities has.
-  """
-  @spec has_which(maybe_id_list, maybe_component_list) :: maybe_component_match_list
-  def has_which(ids, components) when is_list(ids) do
-    client().has_which(ids, enforce_list(components))
-  end
-
-  def has_which(id, components), do: hd(has_which([id], components))
-
-  @doc """
-  Check to see which of a set of keys a set of entities has.
-  """
-  @spec has_which(maybe_id_list, maybe_component_list, maybe_key_list) ::maybe_component_match_list
-  def has_which(ids, components, keys) when is_list(ids) do
-    client().has_which(ids, enforce_list(components), enforce_list(keys))
-  end
-
-  def has_which(id, components, keys), do: hd(has_which([id], components, keys))
-
-  @doc """
-  Check to see which of a set of keys a set of entities has. The value associated
-  with the each key is passed to each of the comparison functions. If all functions return
-  true then there is a match.
-  """
-  @spec has_which(maybe_id_list, maybe_component_list, maybe_key_list, maybe_fun_list) :: maybe_component_match_list
-  def has_which(ids, components, keys, functions) when is_list(ids) do
-    client().has_which(ids, enforce_list(components), enforce_list(keys), enforce_list(functions))
-  end
-
-  def has_which(id, components, keys, functions) do
-    hd(has_which([id], components, keys, functions))
-  end
-
-  @doc """
-  List the components of a set of entities.
-  """
-  @spec list(maybe_id_list) :: maybe_list_components_list
-  def list(ids) when is_list(ids), do: client().list(ids)
-
-  def list(id), do: hd(list([id]))
-
-  @doc """
-  List the keys belonging to a set of components of a set of entities.
-  """
-  @spec list(maybe_id_list, maybe_component_list) :: maybe_list_keys_list
-  def list(ids, components) when is_list(ids) do
-    client().list(ids, enforce_list(components))
-  end
-
-  def list(id, components), do: hd(list([id], components))
-
-  @doc """
   List the entities which have a set of components.
   """
   @spec find_with_all(maybe_component_list) :: id_list
@@ -296,6 +176,146 @@ defmodule Execs do
   def find_with_any(components, keys, functions) do
     client().find_with_any(enforce_list(components), enforce_list(keys), enforce_list(functions))
   end
+
+  @doc """
+  Check to see if a set of entities has a set of components.
+  """
+  @spec has_all(maybe_id_list, maybe_component_list) :: maybe_id_match_list
+  def has_all(ids, components) when is_list(ids) do
+    client().has_all(ids, enforce_list(components))
+  end
+
+  def has_all(id, components) do
+    has_all([id], components)
+    |> hd()
+    |> Map.get(:result)
+  end
+
+  @doc """
+  Check to see if a set of entities has set of keys.
+  """
+  @spec has_all(maybe_id_list, maybe_component_list, maybe_key_list) :: maybe_id_match_list
+  def has_all(ids, components, keys) when is_list(ids) do
+    client().has_all(ids, enforce_list(components), enforce_list(keys))
+  end
+
+  def has_all(id, components, keys) do
+    has_all([id], components, keys)
+    |> hd()
+    |> Map.get(:result)
+  end
+
+  @doc """
+  Check to see if a set of entities has set of keys. The value associated with the each key
+  is passed to each of the comparison functions. If all functions return true then there is
+  a match.
+  """
+  @spec has_all(maybe_id_list, maybe_component_list, maybe_key_list, maybe_fun_list) :: maybe_id_match_list
+  def has_all(ids, components, keys, functions) when is_list(ids) do
+    client().has_all(ids, enforce_list(components), enforce_list(keys), enforce_list(functions))
+  end
+
+  def has_all(id, components, keys, functions) do
+    has_all([id], components, keys, functions)
+    |> hd()
+    |> Map.get(:result)
+  end
+
+  @doc """
+  Check to see if a set of entities has at least one of a set of components.
+  """
+  @spec has_any(maybe_id_list, maybe_component_list) :: maybe_id_match_list
+  def has_any(ids, components) when is_list(ids) do
+    client().has_any(ids, enforce_list(components))
+  end
+
+  def has_any(id, components) do
+    has_any([id], components)
+    |> hd()
+    |> Map.get(:result)
+  end
+
+  @doc """
+  Check to see if a set of entities has at least one of a set of keys.
+  """
+  @spec has_any(maybe_id_list, maybe_component_list, maybe_key_list) :: maybe_id_match_list
+  def has_any(ids, components, keys) when is_list(ids) do
+    client().has_any(ids, enforce_list(components), enforce_list(keys))
+  end
+
+  def has_any(id, components, keys) do
+    has_any([id], components, keys)
+    |> hd()
+    |> Map.get(:result)
+  end
+
+  @doc """
+  Check to see if a set of entities has at least one of a set of keys. The value associated
+  with the each key is passed to each of the comparison functions. If all functions return
+  true then there is a match.
+  """
+  @spec has_any(maybe_id_list, maybe_component_list, maybe_key_list, maybe_fun_list) :: maybe_id_match_list
+  def has_any(ids, components, keys, functions) when is_list(ids) do
+    client().has_any(ids, enforce_list(components), enforce_list(keys), enforce_list(functions))
+  end
+
+  def has_any(id, components, keys, functions) do
+    has_any([id], components, keys, functions)
+    |> hd()
+    |> Map.get(:result)
+  end
+
+  @doc """
+  Check to see which of a set of components a set of entities has.
+  """
+  @spec has_which(maybe_id_list, maybe_component_list) :: maybe_component_match_list
+  def has_which(ids, components) when is_list(ids) do
+    client().has_which(ids, enforce_list(components))
+  end
+
+  def has_which(id, components), do: hd(has_which([id], components))
+
+  @doc """
+  Check to see which of a set of keys a set of entities has.
+  """
+  @spec has_which(maybe_id_list, maybe_component_list, maybe_key_list) :: maybe_component_match_list
+  def has_which(ids, components, keys) when is_list(ids) do
+    client().has_which(ids, enforce_list(components), enforce_list(keys))
+  end
+
+  def has_which(id, components, keys), do: hd(has_which([id], components, keys))
+
+  @doc """
+  Check to see which of a set of keys a set of entities has. The value associated
+  with the each key is passed to each of the comparison functions. If all functions return
+  true then there is a match.
+  """
+  @spec has_which(maybe_id_list, maybe_component_list, maybe_key_list, maybe_fun_list) :: maybe_component_match_list
+  def has_which(ids, components, keys, functions) when is_list(ids) do
+    client().has_which(ids, enforce_list(components), enforce_list(keys), enforce_list(functions))
+  end
+
+  def has_which(id, components, keys, functions) do
+    hd(has_which([id], components, keys, functions))
+  end
+
+  @doc """
+  List the components of a set of entities.
+  """
+  @spec list(maybe_id_list) :: maybe_list_components_list
+  def list(ids) when is_list(ids), do: client().list(ids)
+
+  def list(id), do: hd(list([id]))
+
+  @doc """
+  List the keys belonging to a set of components of a set of entities.
+  """
+  @spec list(maybe_id_list, maybe_component_list) :: maybe_list_keys_list
+  def list(ids, components) when is_list(ids) do
+    client().list(ids, enforce_list(components))
+  end
+
+  def list(id, components), do: hd(list([id], components))
 
   @doc """
   Read a set of entities.

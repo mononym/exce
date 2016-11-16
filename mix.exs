@@ -3,7 +3,7 @@ defmodule Execs.Mixfile do
 
   def project do
     [app: :execs,
-     version: "0.4.0",
+     version: "0.4.1",
      elixir: "~> 1.3",
      build_embedded: Mix.env == :prod,
      start_permanent: Mix.env == :prod,
@@ -16,13 +16,12 @@ defmodule Execs.Mixfile do
     [applications: [:mnesia],
      env: [ai_table_name: :ai_table,
            data_table_name: :data_table,
-           db_client: Execs.DbClient.Mnesia,
-           purge_data_on_start: false]]
+           db_client: Execs.DbClient.Mnesia]]
   end
 
   defp deps do
     [{:ex_doc, ">= 0.14.3", only: :dev},
-     {:inch_ex, only: :docs},
+     {:inch_ex, ">= 0.0.0", only: :docs},
      {:qlc, "~> 1.0"}]
   end
 

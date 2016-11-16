@@ -41,7 +41,6 @@ Key                  | Default Value         | Affect
 ai_table_name        | ai_table              | Name of the autoincrement table
 data_table_name      | data_table            | Name of the data table
 db_client            | Execs.DbClient.Mnesia | Client module performs db interactions
-purge_data_on_start  | false                 | Clean tables of all data on start
 
 
 ## Examples
@@ -52,14 +51,23 @@ Execs.transaction(fn ->
   Execs.write(id, :foo, :bar, :foobar)
 end)
 
-# Write a value to a single key, of multiple component, of a single entity 
+# Write a value to a single key, of multiple components, of a single entity 
 Execs.transaction(fn ->
   Execs.write(id, [:foo, :bar], :bar, :foobar)
 end)
 
-# Write a value to multiple keys, of multiple component, of multiple entities 
+# Write a value to multiple keys, of multiple components, of multiple entities 
 Execs.transaction(fn ->
   Execs.write([id, id2], [:foo, :bar], [:foo, :bar], :foobar)
+end)
+
+# Write a series of key/value pairs to a single component of a single entity
+Execs.transaction(fn ->
+  id
+  |> Execs.write(:foo, :bar, :foobar)
+  |> Execs.write(:foo, :bar, :foobar)
+  |> Execs.write(:foo, :foo, :foobar)
+  |> Execs.write(:foo, :foobar, :foobar)
 end)
 
 # Read an entire entity from database 

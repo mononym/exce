@@ -1,6 +1,10 @@
 defmodule Execs.DbClient.Client do
   @moduledoc """
-  Data manipulation is handled through clients which implement this interface.
+  Data manipulation is handled through clients which implement this interface. Like GenServer,
+  however, there are some sensible defaults provided for certain callbacks so be sure to add
+  'use Execs.DbClient.Client' to the top of your module instead of using the @behaviour tag.
+  
+  Those callbacks with defaults defined are explicitely called out below.
   """
 
   @opaque id :: integer()
@@ -36,23 +40,48 @@ defmodule Execs.DbClient.Client do
 
   @doc """
   Setup the schema for the database.
+  
+  If this callback is not implemented, the default callback performs no action.
   """
   @callback create_schema() :: any()
 
   @doc """
   Delete the schema for the database.
+  
+  If this callback is not implemented, the default callback performs no action.
   """
   @callback create_schema() :: any()
 
   @doc """
   Create the tables for the database.
+  
+  If this callback is not implemented, the default callback performs no action.
   """
   @callback create_tables() :: any()
 
   @doc """
   Drop the tables for the database.
+  
+  If this callback is not implemented, the default callback performs no action.
   """
   @callback drop_tables() :: any()
+
+  @doc """
+  Called when Execs is starting. Provides a hook to ensure any required
+  applications have been started and/or any setup has a chance to be
+  performed.
+  
+  If this callback is not implemented, the default callback performs no action.
+  """
+  @callback initialize() :: any()
+
+  @doc """
+  Called when Execs is shutting down. Provides a hook to ensure any
+  required teardown work has been performed.
+  
+  If this callback is not implemented, the default callback performs no action.
+  """
+  @callback teardown(any()) :: any()
 
   @doc """
   Take a function and execute it in the context of a transaction.
@@ -228,4 +257,36 @@ defmodule Execs.DbClient.Client do
                   maybe_component_list,
                   maybe_key_list,
                   any()) :: maybe_id_list
+                  
+  @doc false
+  defmacro __using__(_) do
+    quote location: :keep do
+      @behaviour Execs.DbClient.Client
+      
+      @doc false
+      def create_schema, do: :ok
+      
+      @doc false
+      def delete_schema, do: :ok
+      
+      @doc false
+      def create_tables, do: :ok
+      
+      @doc false
+      def drop_tables, do: :ok
+      
+      @doc false
+      def initialize, do: :ok
+      
+      @doc false
+      def teardown(_state), do: :ok
+
+      defoverridable [create_schema: 0,
+                      delete_schema: 0,
+                      create_tables: 0,
+                      drop_tables: 0,
+                      initialize: 0,
+                      teardown: 1]
+    end
+  end
 end

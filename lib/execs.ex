@@ -7,6 +7,7 @@ defmodule Execs do
 
   All clients must implement the Execs.DbClient.Client behavior.
   """
+  use Application
   use Execs.Utils
 
   @opaque id :: integer()
@@ -42,7 +43,7 @@ defmodule Execs do
 
 
   #
-  # Mix tasks
+  # Mix tasks and Application Callbacks
   #
 
 
@@ -64,6 +65,23 @@ defmodule Execs do
   @doc false
   def drop_tables do
     client().drop_tables()
+  end
+
+  @doc false
+  def start(_type, _args) do
+    import Supervisor.Spec, warn: false
+
+    state = client().initialize()
+
+    children = []
+    opts = [strategy: :one_for_one, name: Execs.Supervisor]
+    {:ok, pid} = Supervisor.start_link(children, opts)
+    {:ok, pid, state}
+  end
+  
+  @doc false
+  def stop(state) do
+    client().teardown(state)
   end
 
 

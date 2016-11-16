@@ -386,7 +386,6 @@ defmodule ExecsTest do
     end
   end
 
-
   defp setup_context(_context) do
     %{id: new_entity()}
   end

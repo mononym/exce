@@ -1,9 +1,9 @@
 defmodule Execs.DbClient.Mnesia do
   @moduledoc false
 
-  @behaviour Execs.DbClient.Client
   require Record
   require Qlc
+  use Execs.DbClient.Client
   use Execs.Utils
 
   @ai [table: nil, autoincrement_id: nil]
@@ -17,7 +17,7 @@ defmodule Execs.DbClient.Mnesia do
 
 
   #
-  # Mix callbacks
+  # Mix and Application callbacks
   #
 
   def create_schema do
@@ -51,6 +51,8 @@ defmodule Execs.DbClient.Mnesia do
     :mnesia.delete_table(cfg(:data_table_name))
     :mnesia.delete_table(cfg(:ai_table_name))
   end
+  
+  def initialize, do: Application.ensure_started(:mnesia)
 
 
   #

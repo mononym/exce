@@ -8,13 +8,13 @@ Elixir Entity Component System. Abstracts away the mechanisms used to store, loo
 
 Note that this application only provides the mechanisms for working with data and expects the consuming application to provide the "System" part of the equation.
 
-**WARNING**: This software is new and has been minimally tested.
+**WARNING**: This software is new and has been minimally tested. Any feedback or suggestions would be welcome.
 
 ## Including as Dependency
 
 ```elixir
 defp deps do
-  [{:execs, "~> 0.4.0"}]
+  [{:execs, "~> 0.5.0"}]
 end
 ```
 
